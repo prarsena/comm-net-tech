@@ -64,7 +64,7 @@ javac PhotoServer.java
 java PhotoServer
 ```
 
-The server listens on TCP port `8443` and saves the received JPEG as `received_from_python.jpg` in `server/java`. Allow inbound TCP `8443` through Windows Firewall on the private network if the client cannot connect.
+The server listens on TCP port `8443`, prints its active non-loopback IPv4 addresses at startup, and saves the received JPEG as `received_from_python.jpg` in `server/java`. Use the address reachable from the Mac, and allow inbound TCP `8443` through Windows Firewall on the private network if the client cannot connect.
 
 If you prefer to reuse the Python server's PEM pair, create `keystore.p12` from `server/java` with OpenSSL:
 

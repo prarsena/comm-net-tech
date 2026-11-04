@@ -4,8 +4,13 @@ import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.file.Path;
 import java.security.KeyStore;
+import java.util.Enumeration;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
@@ -45,6 +50,12 @@ public final class PhotoServer {
             serverSocket.setEnabledProtocols(TLS_PROTOCOLS);
             System.out.println("[*] Java Photo Ingestion Server listening on port " + PORT + "...");
             System.out.println("[*] Waiting for Python client connection over TLS 1.3...");
+            try {
+                printLocalIpv4Addresses();
+            } catch (SocketException exception) {
+                System.err.println(
+                        "[!] Unable to list local IPv4 addresses: " + exception.getMessage());
+            }
 
             try (SSLSocket socket = (SSLSocket) serverSocket.accept()) {
                 socket.setEnabledProtocols(TLS_PROTOCOLS);
@@ -93,6 +104,38 @@ public final class PhotoServer {
                     Desktop.getDesktop().open(OUTPUT_FILE.toFile());
                 }
             }
+        }
+    }
+
+    private static void printLocalIpv4Addresses() throws SocketException {
+        System.out.println("[*] Local IPv4 addresses for the Python client (port " + PORT + "):");
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        boolean foundAddress = false;
+
+        while (interfaces != null && interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+            if (!networkInterface.isUp() || networkInterface.isLoopback()) {
+                continue;
+            }
+
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (!(address instanceof Inet4Address)
+                        || address.isAnyLocalAddress()
+                        || address.isLoopbackAddress()) {
+                    continue;
+                }
+
+                System.out.printf(
+                        "[*]   %s (%s)%n",
+                        address.getHostAddress(), networkInterface.getDisplayName());
+                foundAddress = true;
+            }
+        }
+
+        if (!foundAddress) {
+            System.out.println("[!] No active non-loopback IPv4 addresses found.");
         }
     }
 }
