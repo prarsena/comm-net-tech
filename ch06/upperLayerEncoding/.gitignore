@@ -1,0 +1,22 @@
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Create a separate, local environment for each Python component.
+.venv/
+venv/
+
+# Local TLS credentials and generated keystore
+/server/python/cert.pem
+/server/python/key.pem
+/server/java/keystore.p12
+
+# Local input and generated transfer output
+/client/IMG_0806.HEIC
+/received_upload.jpg
+/server/python/received_upload.jpg
+/server/java/received_from_python.jpg
+/server/java/*.class
