@@ -64,7 +64,11 @@ javac PhotoServer.java
 java PhotoServer
 ```
 
-The server listens on TCP port `8443`, prints its active non-loopback IPv4 addresses at startup, and saves the received JPEG as `received_from_python.jpg` in `server/java`. Use the address reachable from the Mac, and allow inbound TCP `8443` through Windows Firewall on the private network if the client cannot connect.
+The server listens on TCP port `8443`, prints its active non-loopback IPv4 addresses at startup, and saves the received JPEG as `received_from_python.jpg` in `server/java`. It tries the default image viewer and falls back to Paint on Windows if opening the file fails. After opening the original, the terminal offers filters in order: sepia, grayscale, then color negative. Enter `y` or `yes` to apply the first filter you want; each later choice is only asked if you decline the previous one. The filtered copy is saved as `received_from_python_sepia.jpg`, `received_from_python_grayscale.jpg`, or `received_from_python_negative.jpg` and opened in the same viewer. The original remains unchanged. These filters run on the server after receipt and do not change the transfer protocol.
+
+The Java server keeps listening for new clients after each session. Stop it with `Ctrl+C`. Output filenames are reused, so a later image replaces the previous received image and any corresponding filtered copy.
+
+Use the address reachable from the Mac, and allow inbound TCP `8443` through Windows Firewall on the private network if the client cannot connect.
 
 If you prefer to reuse the Python server's PEM pair, create `keystore.p12` from `server/java` with OpenSSL:
 
@@ -87,5 +91,3 @@ python server.py
 ```
 
 The Python server generates a local self-signed `cert.pem` and `key.pem` on first run if they are missing, then listens on the same TCP port. It can be used instead of the Java server; only one server can listen on port `8443` at a time.
-
-See [`java-server.md`](java-server.md) for the Java server's protocol architecture.

@@ -19,4 +19,5 @@ venv/
 /received_upload.jpg
 /server/python/received_upload.jpg
 /server/java/received_from_python.jpg
+/server/java/received_from_python_*.jpg
 /server/java/*.class
